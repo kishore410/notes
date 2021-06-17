@@ -1,0 +1,14 @@
+---
+- hosts: all
+  tasks: 
+  -  shell:  vgs --units B
+     register:  response
+  -  debug:
+       var:  response.stdout_lines[1]
+  -  set_fact:
+       my_free_in_bytes:  "{{ response.stdout_lines[1]|regex_replace('^.*\\s+(\\d+)B$', '\\1')  }}"
+  -  fail:
+       msg:  "Not enough free space : need 5G, have {{ my_free_in_bytes }} bytes"
+     when: my_free_in_bytes|int <= 5368706371	   
+  -  debug:
+       var:  my_free_in_bytes	   

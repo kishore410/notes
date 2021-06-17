@@ -1,0 +1,22 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+  - name: "Add a new line in /etc/sysconfig/network file"
+    ansible.builtin.lineinfile:
+      path: /etc/sysconfig/network
+      line: 'RES_OPTIONS="timeout:1"'
+      insertafter: EOF
+      state: present
+      backup: yes
+    register: result
+  - name: Print Debug message
+    ansible.builtin.debug:
+      msg: "Updated file sucessfully on {{ inventory_hostname }}"
+#    local_action: output.txt
+  - name: copy the output to local file
+    copy:
+      content: "{{ result }}"
+      dest: "output.txt"
+    delegate_to: localhost  
+

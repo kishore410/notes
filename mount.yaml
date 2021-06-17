@@ -1,0 +1,19 @@
+---
+- hosts: all
+  gather_facts: false
+  vars:
+    NAS_Mount: "{{NAS_Mount}}"
+    Server_Mount: "{{Mount_point}}"
+  tasks:
+  - debug:
+      msg: "Pass playbook variables like -e NAS_Mount=192.168.0.101:/home Server_Mount=/test1"
+  - name: Mount NAS mount point
+    ansible.posix.mount:
+      src: "{{ NAS_Mount }}"
+      path: "{{ Server_Mount }}"
+      opts: rw,soft,bg,intr,_netdev
+      state: mounted
+      fstype: nfs
+      backup: yes
+    register: output.txt
+  - debug: var=output.txt  

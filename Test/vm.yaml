@@ -1,0 +1,7 @@
+---
+- vsphere_guest:
+    vcenter_hostname: 192.168.56.168
+    username: root
+    password: kishore123@
+    guest: Ansi-1
+    state: powered_on

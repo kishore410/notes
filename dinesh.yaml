@@ -1,0 +1,40 @@
+---
+- hosts: all
+  tasks: 
+  -  shell:  yum clean all
+     args:
+       warn:  no
+  -  shell:  vgs --units B centos
+     register:  response
+
+  -  debug:
+       var:  response.stdout_lines[1]
+
+  -  set_fact:
+       my_free_in_bytes:  "{{ response.stdout_lines[1]|regex_replace('^.*\\s+(\\d+)B$', '\\1') }}"
+  -  fail:
+       msg:  "Not enough free space in vg00: need 5G, have {{ my_free_in_bytes }} bytes"
+     when: my_free_in_bytes|int <= 5368706371	   
+  -  debug:
+       var:  my_free_in_bytes	   
+  -  lvol:
+       vg:  centos
+       lv:  var_cache_yum_lv
+       size:  5g 
+  -  filesystem:
+       fstype: xfs
+       dev: /dev/mapper/centos-var_cache_yum_lv
+       force: no
+  -  shell: rm -rf /var/cache/yum
+  -  file:
+       path: /var/cache/yum
+       state: directory
+       mode: '0755'
+  -  mount:
+       path: /var/cache/yum  
+       src: /dev/mapper/centos-var_cache_yum_lv
+       fstype:  xfs
+       state:  mounted 
+  -  shell: yum refresh
+     args:
+       warn:  no

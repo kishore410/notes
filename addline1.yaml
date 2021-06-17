@@ -1,0 +1,10 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+  - name: "Add a new line in /etc/sysconfig/network file"
+    ansible.builtin.lineinfile:
+      path: /etc/sysconfig/network
+      line: 'RES_OPTIONS="timeout:1"'
+      insertafter: EOF
+      backup: yes

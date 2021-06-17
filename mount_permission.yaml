@@ -1,0 +1,30 @@
+---
+- hosts: all
+  gather_facts: false
+  vars:
+    NAS_Mount: "{{NAS_Mount}}"
+    Server_Mount: "{{Mount_point}}"
+    Owner: "{{ Owner }}"
+    Group: "{{ Group }}"
+    Mode: "{{ Mode }}"
+  tasks:
+  - name: change permissions to Mount point
+    ansible.builtin.file:
+      path: "{{ Server_Mount }}"
+      owner: "{{ Owner }}" 
+      group: "{{ Group }}"
+      mode:  "{{ Mode }}"
+  - name: Mount NAS mount point
+    ansible.posix.mount:
+      src: "{{ NAS_Mount }}"
+      path: "{{ Server_Mount }}"
+      opts: rw,soft,bg,intr,_netdev
+      state: mounted
+      fstype: nfs
+      backup: yes
+#  - name: change permissions to Mount point
+#    ansible.builtin.file:
+#      path: "{{ Server_Mount }}"
+#      owner: "{{ Owner }}" 
+#      group: "{{ Group }}"
+#     mode:  "{{ Mode }}"
